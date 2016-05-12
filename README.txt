@@ -1,10 +1,7 @@
-本项目是基于规则方法的对电子商品评论的情感分析，主要流程：
-——数据预处理（包括LTP分词）
-——基于规则的方法抽取特征词+过滤，基于统计的方法抽取特征词+过滤
-——基于规则的方法抽取特征词对应的观点词，基于统计的方法抽取观点词
-——<特征词，观点词>的倾向性标注
-——根据每条评论中的<特征词，观点词>词对进行分类打分：-1, 0, 1
-——统计准确率、召回率
+目录：
+1. 程序结构说明
+2. 运行方式说明
+
 
 **********************************程序结构说明***************************************
 总程序包含两个工程：
@@ -47,7 +44,6 @@
 	7) so.sentence.polarity是对语料库进行观点分类的包，其中
 		Polarity是对语料库中的每条评论进行逐一分类的类
 	8) basic FileManipulator类是进行主要读写文件操作的包
-	9) test 是进行评价指标计算的类，计算准确率和召回率
 
 	程序使用的主要使用的数据结构：
 	beans包，其中
@@ -58,25 +54,35 @@
 
 	输入输出信息：
 	本程序的所有输入输出结果均在etc文件夹下，程序采用递增式方法，每一步的输出都保存为中间结果并存储于文件中，作为后续工作的输入
-		test_parser.xml 语料库经LTP分词后的结果
-		pos.txt正向情感词表
-		neg.txt负向情感词表
-		stopwords.txt停用词表
-		wp.txt标点符号表
-		escape.txt转移副词表
-		degree.txt程度副词表
-		conjunctive.txt承接连词表
-		disjunctive.txt转折连词表
-		all_words.txt每个词所在句子的记录
-		feature_words_rule_gen.txt基于规则抽取的属性词
-		feature_words_rule_filter.txt基于规则过滤后的属性词
-		feature_words_statistics.txt基于统计扩展和过滤后的属性词
-		FO_Rule1.txt基于规则1抽取的属性观点对
-		FO_Rule2.txt基于规则2抽取的属性观点对
-		feature_opinion_polarity.txt属性观点对倾向性标注结果1
-		feature_opinion_polarity_updated.txt属性观点对倾向性迭代更新后的结果2
-		result.txt语料库观点分类的结果
-		label.txt测试数据
+	- etc文件夹
+		- courpus 文件夹：
+			****.ltp.format.xml 语料库经LTP分词后的结果，****代表四个类别-camera, mobile, mp3_mp4, notebook
+			****.corpus raw data, 每个分类下的原始评论数据
+		- mp3 文件夹 —— mp3/mp4分类下的结果文件
+			all_words.txt每个词所在句子的记录
+			feature_words_rule_gen.txt基于规则抽取的属性词
+			feature_words_rule_filter.txt基于规则过滤后的属性词
+			feature_words_statistics.txt基于统计扩展和过滤后的属性词
+			FO_Rule1.txt基于规则1抽取的属性观点对
+			FO_Rule2.txt基于规则2抽取的属性观点对
+			RO_BaseStat.txt基于统计方法抽取的属性观点对
+			FO_ALL.txt基于规则1+基于规则2+基于统计的抽取的属性观点对集合的合并
+			feature_opinion_polarity.txt属性观点对倾向性标注结果1
+			feature_opinion_polarity_updated.txt属性观点对倾向性迭代更新后的结果2
+			result.txt语料库观点分类的结果
+			record.txt记录文件
+		- camera 文件夹 —— 相机分类下的结果文件
+		- mobile 文件夹 —— 手机分类下的结果文件
+		- notebook 文件夹 —— 笔记本分类下的结果文件
+		- pos.txt正向情感词表
+		- neg.txt负向情感词表
+		- stopwords.txt停用词表
+		- wp.txt标点符号表
+		- escape.txt转移副词表
+		- degree.txt程度副词表
+		- conjunctive.txt承接连词表
+		- disjunctive.txt转折连词表
+		
 
 **********************************运行方式说明***************************************
 
@@ -93,7 +99,7 @@
 	>java -jar preprocess.java
 	(注：由于LTP是http get方式获取分词信息的，因此该程序运行时间长，且输出信息较多)
 
-3. OpinionMing 运行
+3. OpinionMining 运行
 	该程序的jar包在OpinionMining文件夹下，名称：run.jar，运行命令：
 
 	>cd OpinionMining
@@ -105,5 +111,41 @@
 	- camera: 运行相机分类下的评论分析
 	- mobile: 运行手机分类下的评论分析
 	- notebook: 运行笔记本电脑下的评论分析
+
+OpinionMining 运行结果示例：
+
+jingdeMacBook-Pro-3:OpinionMining Jingzhang$ java -jar Run.jar 
+analyzing mp3 domain reviews...
+output file: etc/mp3/
+all_words.txt generated, all_words list size:2155
+
+*****************extract feature words ********************
+
+rule based generating completed, feature words size:1793
+rule based filter completed, feature words size:477
+statistic based generating completed, feature words size:485
+
+*****************extract opinion words ********************
+
+rule 1 generating completed, feature words size:821
+rule 2 generating completed, feature words size:115
+statistic based generating completed, feature words size:463
+
+*****************polarity and classify ********************
+
+pair polarity completed, size:897
+pair polarity updating completed, size:897
+sentence polarity completed, size:1000
+test data size:1000
+Accuracy:
+Pos: 817 / 832 | 0.9819711538461539
+Neg: 8 / 81 | 0.09876543209876543
+Neu: 11 / 87 | 0.12643678160919541
+Recall:
+Pos: 817 / 956 | 0.854602510460251
+Neg: 8 / 14 | 0.5714285714285714
+Neu: 11 / 30 | 0.36666666666666664
+
+
 	
 	
